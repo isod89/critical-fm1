@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CRITICAL installer</title>
+<style>
+:root{--bg:#0f1311;--panel:#1a201d;--panel2:#222a26;--ink:#e6ebe7;--dim:#8f9c95;--acc:#f0a020;--grn:#5ef08a;--blue:#4696ff;--ok:#5ef08a;--bad:#ff6b6b;--line:#2e3833}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:760px;margin:0 auto;padding:28px 16px 60px}
+a{color:var(--blue)}code,kbd{font:14px ui-monospace,Consolas,monospace;background:var(--panel2);border-radius:4px;padding:1px 5px}
+kbd{border:1px solid var(--line);font-weight:700}
+h1{font-size:30px;margin:0;letter-spacing:.04em}h2{font-size:20px;margin:34px 0 8px;padding-top:18px;border-top:1px solid var(--line)}
+h3{font-size:16px;margin:18px 0 4px}p{margin:8px 0}.dim{color:var(--dim)}ol,ul{padding-left:22px}li{margin:6px 0}
+.term{background:#020c06;color:#3ce664;font:15px/1.5 ui-monospace,Consolas,monospace;border-radius:10px;padding:14px 16px;margin:14px 0;border:1px solid #0d3a1c;white-space:pre-wrap}
+.term b{color:#8cffa0}.term .inv{background:#3ce664;color:#020c06;padding:0 3px}
+.box{background:var(--panel);border-radius:10px;padding:12px 16px;margin:14px 0;border-left:4px solid var(--line)}
+.safe{border-left-color:var(--grn)}.warn{border-left-color:var(--acc)}.stop{border-left-color:var(--bad)}
+.step{display:inline-block;background:var(--acc);color:#1a1400;font-weight:800;border-radius:6px;padding:0 8px;margin-right:6px}
+.ways{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:640px){.ways{grid-template-columns:1fr}}
+.way{background:var(--panel);border-radius:10px;padding:12px 16px}
+.way h3{margin-top:4px}.tag{font-size:12px;color:var(--dim);text-transform:uppercase;letter-spacing:.08em}
+button{background:var(--acc);color:#1a1400;border:0;border-radius:10px;padding:12px 20px;font-size:17px;font-weight:700;cursor:pointer;margin:4px 8px 4px 0}
+button.alt{background:var(--panel2);color:var(--ink);border:1px solid var(--line)}
+button:disabled{opacity:.4;cursor:default}
+#bar{height:10px;background:var(--panel);border-radius:5px;overflow:hidden;margin-top:12px}#fill{height:100%;width:0;background:var(--ok)}
+#log{background:var(--panel);border-radius:10px;padding:12px;min-height:110px;white-space:pre-wrap;font:13px/1.45 ui-monospace,monospace;margin-top:12px}
+.ok{color:var(--ok)}.bad{color:var(--bad)}
+.console{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-top:12px}
+footer{margin-top:40px;font-size:14px;color:var(--dim)}
+</style></head><body><main>
+<p class="tag">TACET Laboratories · Reactor Division</p>
+<h1>CRITICAL <span class="dim">__VERSION__</span></h1>
+<p><b>A synthesizer powered by a reactor.</b> Free custom firmware for the M-VAVE FM-1. The sound comes from a model of a nuclear core: the sixteen white keys are its fuel channels, and your hands pull the control rods. The core rises, settles, poisons itself with xenon and drifts on its own. Push the steam too far, press AZ-5, and it can run away.</p>
+<div class="term"><b>TACET LABORATORIES  TC-14</b>
+REACTOR DIVISION - UNIT 4
+
+LOGIN: <b>OPERATOR</b>
+PASSWORD: <b>********</b>
+<span class="inv">ACCESS GRANTED</span></div>
+
+<h2>What you need</h2>
+<ul>
+<li>An M-VAVE FM-1 and a USB cable that carries data (not a charge-only cable).</li>
+<li>A computer with <b>Chrome</b> or <b>Edge</b> (Windows, macOS, Linux or ChromeOS). Firefox and Safari can't talk to MIDI devices this way. Chrome on Android also works.</li>
+<li>About ten minutes. Keep the FM-1 powered by USB the whole time.</li>
+</ul>
+<p>There are three steps: <b>install m-bootloader</b> (once), <b>back up</b> your FM-1, <b>install CRITICAL</b>.</p>
+
+<h2><span class="step">1</span>Install m-bootloader (once)</h2>
+<div class="box safe"><b>Why this step? For your safety.</b> CRITICAL is only ever installed through <a href="https://github.com/jvitkauskas/m-bootloader">m-bootloader</a>, a free, open-source bootloader for the FM-1 by Julius Vitkauskas (MIT licence). It sits under every firmware and makes sure that no firmware, CRITICAL included, can lock you out of your synth:
+<ul>
+<li>It checks the firmware before starting it. If the firmware is damaged or an install was interrupted, the FM-1 doesn't hang. It opens a <b>recovery menu</b> instead, ready to reinstall from a browser.</li>
+<li>Hold <kbd>PLAY</kbd> while switching on: the recovery menu, with <b>MIDI MODE</b> for browser installs. Hold <kbd>REC</kbd>: USB download mode for M-Flasher, without opening the case.</li>
+<li>Installers that use it read the whole package and check it before erasing anything.</li>
+</ul>
+That's why this page refuses to install without it. You only do this step once. Afterwards, any firmware that uses MIDI MODE installs from a browser.</div>
+<p><b>Already have it?</b> Switch the FM-1 off, then on while holding <kbd>PLAY</kbd>. If the m-bootloader menu appears, skip to step 2.</p>
+<div class="ways">
+<div class="way"><span class="tag">Way A · simplest</span><h3>With M-VAVE's M-UPGRADE app</h3>
+<ol>
+<li>Your FM-1 must run M-VAVE's own firmware (as it comes from the factory).</li>
+<li>Download <code>fm1-uboot.fwsc</code> from the <a href="https://github.com/jvitkauskas/m-bootloader/releases/latest">latest m-bootloader release</a>.</li>
+<li>Open it in <b>M-UPGRADE</b>, M-VAVE's updater, and start the upgrade.</li>
+<li>The FM-1's screen shows the bootloader being written, then it restarts. <b>M-UPGRADE then times out with an error: that's expected</b>, the install is already done.</li>
+</ol>
+<p class="dim">The package holds no firmware, only a small installer that writes the bootloader. Your firmware and settings stay. If M-UPGRADE refuses a unit running other firmware, its force upgrade skips the model check.</p></div>
+<div class="way"><span class="tag">Way B · with a full backup</span><h3>With M-Flasher</h3>
+<ol>
+<li>Download <a href="https://github.com/jvitkauskas/m-flasher/releases/latest">M-Flasher</a> for Windows, macOS or Linux (same author, open source).</li>
+<li><b>Back up</b> your whole FM-1 with it first, and keep the file.</li>
+<li>Check the <b>FLASH CHIP</b> it reports (see the note below).</li>
+<li>Download <code>fm1-uboot.boot</code> from the <a href="https://github.com/jvitkauskas/m-bootloader/releases/latest">latest m-bootloader release</a> and install it with M-Flasher's bootloader option (command line: <code>m-flasher bootloader --file fm1-uboot.boot</code>).</li>
+</ol>
+<p class="dim">M-Flasher writes only the boot area and keeps the chip key the installers need.</p></div>
+</div>
+<div class="box warn"><b>Before you write a bootloader:</b>
+<ul>
+<li><b>Keep the power on.</b> Losing power while the boot area is written can leave the unit needing a hardware recovery.</li>
+<li><b>Newer FM-1s.</b> Units sold from late 2026 may have a different flash chip (UCUN UC25HQ80, JEDEC ID <code>0xB36014</code>). m-bootloader is little tested on it. Check FLASH CHIP in M-Flasher first. With that chip, installing is at your own risk: read the <a href="https://github.com/jvitkauskas/m-bootloader#status">m-bootloader status notes</a>.</li>
+<li><b>M-VAVE's official updates put their own bootloader back.</b> If you install one later, repeat this step.</li>
+</ul></div>
+<p><b>Check it worked:</b> switch off, then on while holding <kbd>PLAY</kbd>. The m-bootloader menu appears.</p>
+
+<h2><span class="step">2</span>Connect and back up</h2>
+<ol>
+<li>Switch the FM-1 off, then on while holding <kbd>PLAY</kbd>. In the menu, choose <b>MIDI MODE</b> with <kbd>OCT-</kbd> / <kbd>OCT+</kbd>, then press <kbd>PLAY</kbd>.</li>
+<li>Connect it by USB to this computer, then click <b>1. Connect</b> below. The browser asks to use MIDI devices: allow it. The page reads the FM-1's chip key.</li>
+<li>Click <b>2. Back up</b>. The page saves the whole flash (1 MB) as a file in your downloads: your current firmware, its settings and its sounds. Keep it. With M-Flasher it puts your FM-1 back exactly as it is now.</li>
+</ol>
+
+<h2><span class="step">3</span>Install CRITICAL</h2>
+<p>Click <b>3. Install CRITICAL</b> and wait for the end (about a minute). The FM-1 reads the whole package twice: first to check it (nothing is erased yet), then to write it. <b>Don't unplug, and keep this tab in front</b>: browsers slow down background tabs.</p>
+<div class="console">
+<button id="con">1</button><button id="bak" class="alt" disabled>2</button><button id="go" disabled>3</button>
+<div id="bar"><div id="fill"></div></div>
+<div id="log"></div>
+</div>
+
+<h2>Your first minute</h2>
+<ul>
+<li>The FM-1 restarts on CRITICAL: the plant's terminal logs the operator in. Press <kbd>PLAY</kbd>.</li>
+<li><b>Turn MASTER up gently.</b> The core starts in hot standby: a bed of counts and low channels.</li>
+<li>Hold a white key: you pull that channel's rod. Its power rises, then falls back slowly when you let go.</li>
+<li><kbd>ARP</kbd> keeps rods out. <kbd>SEQ</kbd> lets the core play by itself. <kbd>HOME</kbd> shows everything. <kbd>PRESETS</kbd> changes the scene.</li>
+<li>Hold <kbd>PLAY</kbd> one second: a new plant. Hold <kbd>SAVE</kbd> one second: everything is kept for next time.</li>
+<li>Hold <kbd>REC</kbd> one second: <b>AZ-5</b>, every rod in. With the steam high and many rods out, the core may not take it well.</li>
+</ul>
+<p class="dim">The full guide: <a href="https://github.com/isod89/critical-fm1/blob/main/docs/GUIDE.md">docs/GUIDE.md</a>.</p>
+
+<h2>Going back</h2>
+<ul>
+<li><b>Exactly as before:</b> restore the backup from step 2 with M-Flasher (switch on holding <kbd>REC</kbd> for download mode).</li>
+<li><b>Another firmware:</b> any firmware with a MIDI MODE installer installs over CRITICAL the same way (menu, MIDI MODE, its own page).</li>
+<li><b>M-VAVE's firmware:</b> M-UPGRADE needs a firmware it can update. Restore your backup with M-Flasher.</li>
+</ul>
+
+<h2>If something goes wrong</h2>
+<ul>
+<li><b>"No FM-1 in MIDI MODE found":</b> the FM-1 isn't in MIDI MODE (menu, MIDI MODE, PLAY), or the cable carries no data. Try another cable or port, then click Connect again.</li>
+<li><b>"The FM-1 is running a firmware":</b> switch it off and on holding <kbd>PLAY</kbd>. If no menu appears, m-bootloader isn't installed yet (step 1).</li>
+<li><b>The install stopped halfway:</b> nothing is lost. m-bootloader sees the firmware is incomplete and opens its menu by itself. Choose MIDI MODE, reload this page and install again.</li>
+<li><b>The browser never asks about MIDI:</b> use Chrome or Edge, from a page opened on your computer, and check that MIDI is allowed in the site's settings.</li>
+<li><b>Back up stops:</b> some m-bootloader versions don't answer reads. Make your backup with M-Flasher instead (step 1, way B).</li>
+</ul>
+
+<footer>
+<p>CRITICAL is free software (GPL-3.0): <a href="https://github.com/isod89/critical-fm1">github.com/isod89/critical-fm1</a>. Problems: <a href="https://github.com/isod89/critical-fm1/issues">issues</a>. It is unofficial: not made, endorsed or supported by M-VAVE. Installing third-party firmware is at your own risk. TACET Laboratories is fictional.</p>
+<p>m-bootloader and M-Flasher are by Julius Vitkauskas, MIT licence: <a href="https://github.com/jvitkauskas/m-bootloader">github.com/jvitkauskas/m-bootloader</a> · <a href="https://github.com/jvitkauskas/m-flasher">github.com/jvitkauskas/m-flasher</a>. This page talks to m-bootloader's MIDI MODE as its specification describes. It sends nothing anywhere but to your FM-1.</p>
+</footer>
+</main>
+<script>
+__FWPKG__
+const AREA = Uint8Array.from(atob("__AREA__"), c => c.charCodeAt(0));
+/* ---------------------------------------------------------------- the words, English and French */
+const T = {
+  con: '1. Connect', go: '3. Install CRITICAL', bak: '2. Back up', ready: 'Ready. Put the FM-1 in MIDI MODE (step 2 above), then click 1. Connect.',
+  noport: 'No FM-1 in MIDI MODE found. In MIDI MODE, m-bootloader shows up as "FM-1 Update". Ports seen: ',
+  ldrready: '', ldr: '', nokey: '',
+  codes: {},
+  sloop3: 'The FM-1 is running a firmware (CRITICAL, SLOOP 3 or another), not m-bootloader. Switch it off, then on while holding PLAY, choose MIDI MODE, and click Connect again.',
+  other: 'The FM-1 is running a firmware, not m-bootloader\'s MIDI MODE. Switch it off, then on while holding PLAY. If no recovery menu appears, m-bootloader is not installed yet: do step 1 first.',
+  found: 'FM-1 found: ', reading: '. Reading the chip key...', notmb: 'This is not m-bootloader answering. Nothing is sent.',
+  mb: 'm-bootloader ', stage: ' (RAM stage)', key: ', chip key 0x', badpkg: 'The package does not check out (', badpkg2: '). Nothing is sent.',
+  fwready: 'CRITICAL ready: {n} bytes, encrypted for this chip. Recommended: 2. Back up first. Then 3. Install CRITICAL.',
+  noans: 'No answer. Switch the FM-1 off, then on while holding PLAY, choose MIDI MODE, and reload this page.',
+  inst: 'Installing... Do not unplug the FM-1 and keep this tab in front.', check: 'Checking (nothing written yet) ', write: 'Writing ',
+  done: 'Installed! The FM-1 restarts on CRITICAL: the terminal logs in. Press PLAY, then turn MASTER up gently.',
+  refused: 'The FM-1 refused the package (code {c}).', intact: ' Nothing was written: the FM-1 is as it was.',
+  bstart: 'Backing up the whole flash (1 MB)... Nothing is written.', bdone: 'Backup saved to your downloads: ',
+  bfail: 'Backup stopped (no answer at 0x', err: 'Error: '
+};
+const L = k => k === 'bfail' ? T.bfail : T[k];
+function words() {
+  document.getElementById('con').textContent = L('con'); document.getElementById('go').textContent = L('go');
+  document.getElementById('bak').textContent = L('bak');
+}
+words();
+const log = (t, c) => { const d = document.createElement('div'); d.textContent = t; if (c) d.className = c; document.getElementById('log').appendChild(d); d.scrollIntoView({ block: 'nearest' }); };
+log(L('ready'));
+/* ---------------------------------------------------------------- the frames (m-bootloader docs/SPEC.md 11.6) */
+function frame(cmd, body) {
+  const raw = [0, 0x59, cmd, body.length & 255, body.length >> 8 & 255, body.length >> 16 & 255, ...body];
+  let sum = 0; for (const b of body) sum += b; raw.push(~sum & 255);
+  const out = [0xF0]; let acc = 0, bits = 0;
+  for (const b of raw) { acc |= b << bits; bits += 8; while (bits >= 7) { out.push(acc & 127); acc >>= 7; bits -= 7; } }
+  if (bits) out.push(acc & 127);
+  out.push(0xF7); return out;
+}
+function unpack(data) {
+  const out = []; let acc = 0, bits = 0;
+  for (const b of data) { acc |= (b & 127) << bits; bits += 7; if (bits >= 8) { out.push(acc & 255); acc >>= 8; bits -= 8; } }
+  return out;
+}
+const le32 = (a, i) => (a[i] | a[i + 1] << 8 | a[i + 2] << 16 | a[i + 3] << 24) >>> 0;
+let midi, out, inp, pk, state = 'idle', key = -1, served = 0, total = 0, cap = 0x100000, last10 = -1, waiter = null;
+let ldr = false, auto = false, seen = 0, s28timer = null;
+const FINISH = 0xF0000000, SUCCESS = 0xE0000000;
+const btn = (on, ...ids) => { for (const id of ids) document.getElementById(id).disabled = !on; };
+const ascii = (m, i) => { let s = ''; for (; i < m.length - 1 && m[i]; i++) s += String.fromCharCode(m[i]); return s; };
+function start() {                                       /* the install proper: m-bootloader or our loader reads */
+  btn(false, 'go', 'con', 'bak');
+  state = 'install'; served = 0; last10 = -1;
+  log(L('inst'));
+  out.send([0xF0, 0x22, 0x24, 0x35, 0x7F, 0xF7]);
+}
+function answer(m, data) { out.send(frame(0x30, [m[6], m[7], m[8], m[9], m[10], m[11], m[12], m[13], ...data])); }
+function onMsg(e) {
+  const d = e.data; if (d[0] !== 0xF0) return;
+  const m = unpack(d.slice(1, d.length - 1));
+  if (m.length < 7 || m[1] !== 0x59) return;
+  if (m[2] === 0x23 && waiter) { const w = waiter; waiter = null; w(m); return; }
+  if (m[2] === 0x12 && state === 'asking') {   /* MBOOT or SLDR3, protocol, kind, flags, key, capacity, JEDEC, ..., version */
+    const sig = String.fromCharCode(...m.slice(6, 11));
+    if (sig !== 'MBOOT') { log(L('notmb'), 'bad'); state = 'idle'; return; }   /* (m-bootloader only) */
+    ldr = sig === 'SLDR3';
+    key = m[14] | m[15] << 8; cap = le32(m, 16) || 0x100000;
+    if (ldr && !(m[13] & 1)) { log(L('nokey'), 'bad'); state = 'idle'; return; }
+    const v = ascii(m, 6 + 28);
+    log((ldr ? L('ldr') + ' ' : L('mb')) + v + (!ldr && m[12] === 2 ? L('stage') : '') + L('key') + key.toString(16).toUpperCase().padStart(4, '0'), 'ok');
+    pk = buildPackage(AREA, key);
+    const bad = checkPackage(pk, key);
+    if (bad) { log(L('badpkg') + bad + L('badpkg2'), 'bad'); state = 'idle'; return; }
+    total = pk.size;
+    log(L('fwready').replace('{n}', AREA.length));
+    state = 'ready'; btn(true, 'go', 'bak');
+    if (auto) { auto = false; log(L('ldrready'), 'ok'); }
+  } else if (m[2] === 0x30 && state === 'install') {   /* the unit reads the package */
+    const addr = le32(m, 7), len = m[11] | m[12] << 8 | m[13] << 16;
+    if (addr === FINISH) {
+      answer(m, new Array(len).fill(0));
+      state = 'done'; document.getElementById('fill').style.width = '100%';
+      log(L('done'), 'ok');
+      return;
+    }
+    const part = new Array(len).fill(0xFF);
+    for (let i = 0; i < len; i++) if (addr + i < pk.pkg.length) part[i] = pk.pkg[addr + i];
+    answer(m, part);
+    if (addr >= pk.flashAt) {
+      served += len;
+      /* both read it all once to check it (nothing is erased yet), then again sector by sector to write */
+      const check = total + 32, all = check + total - 0x4000;
+      const pct = Math.min(99, Math.floor(served * 100 / all));
+      document.getElementById('fill').style.width = pct + '%';
+      if (pct % 10 === 0 && pct !== last10) { last10 = pct; log((served <= check ? L('check') : L('write')) + pct + ' %'); }
+    }
+  } else if (m[2] === 0 && state === 'install') {
+    const c = m[6], why = ldr && L('codes')[c] ? ' ' + L('codes')[c] : '';
+    log(L('refused').replace('{c}', c + why) + (served <= total + 32 ? L('intact') : ''), 'bad');
+    state = 'idle'; btn(true, 'con');
+  }
+}
+function attach(o, i) {
+  if (inp) inp.onmidimessage = null;
+  out = o; inp = i; inp.onmidimessage = onMsg;
+}
+const port = (re) => [[...midi.outputs.values()].find(p => re.test(p.name)), [...midi.inputs.values()].find(p => re.test(p.name))];
+document.getElementById('con').onclick = async () => {
+  try {
+    midi = midi || await navigator.requestMIDIAccess({ sysex: true });
+    const names = [...midi.outputs.values()].map(p => p.name);
+    let [o, i] = port(/FM-1 Update/i);
+    if (o && i) {                                         /* m-bootloader's MIDI MODE, or our update loader */
+      attach(o, i);
+      state = 'asking'; log(L('found') + out.name + L('reading'));
+      out.send(frame(0x12, []));
+      setTimeout(() => { if (state === 'asking') { log(L('noans'), 'bad'); state = 'idle'; } }, 3000);
+      return;
+    }
+    if (names.some(n => /SLOOP 3|CRITICAL|Felucca/i.test(n))) log(L('sloop3'), 'bad');
+    else if (names.some(n => /FM-1|SLOOP/i.test(n))) log(L('other'), 'bad');
+    else log(L('noport') + names.join(', '), 'bad');
+  } catch (err) { log(L('err') + err.message, 'bad'); }
+};
+document.getElementById('go').onclick = () => {
+  if (state !== 'ready') return;
+  start();
+};
+/* the backup: the whole flash as stored, 512 bytes a read (command 0x23; nothing written) */
+function read23(addr, n) {
+  return new Promise((res, rej) => {
+    const t = setTimeout(() => { waiter = null; rej(new Error('timeout')); }, 2000);
+    waiter = m => { clearTimeout(t); res(m); };
+    out.send(frame(0x23, [0, addr & 255, addr >> 8 & 255, addr >> 16 & 255, addr >>> 24, n & 255, n >> 8 & 255, 0]));
+  });
+}
+document.getElementById('bak').onclick = async () => {
+  if (state !== 'ready') return;
+  for (const id of ['go', 'con', 'bak']) document.getElementById(id).disabled = true;
+  state = 'backup'; log(L('bstart'));
+  const img = new Uint8Array(cap); let a = 0, tries = 0;
+  while (a < cap) {
+    try {
+      const m = await read23(a, 512);
+      if (le32(m, 7) !== a || m.length < 14 + 512) throw new Error('reply');
+      img.set(m.slice(14, 14 + 512), a); a += 512; tries = 0;
+      document.getElementById('fill').style.width = Math.floor(a * 100 / cap) + '%';
+    } catch (e) { if (++tries > 3) { log(L('bfail') + a.toString(16) + '). This m-bootloader may not answer reads: make the backup with M-Flasher instead (step 1, way B).', 'bad'); break; } }
+  }
+  if (a >= cap) {
+    const name = 'fm1-flash-' + key.toString(16).padStart(4, '0') + '-' + new Date().toISOString().slice(0, 10) + '.bin';
+    const url = URL.createObjectURL(new Blob([img], { type: 'application/octet-stream' }));
+    const ln = document.createElement('a'); ln.href = url; ln.download = name; document.body.appendChild(ln); ln.click(); ln.remove();
+    log(L('bdone') + name, 'ok');
+  }
+  state = 'ready'; for (const id of ['go', 'con', 'bak']) document.getElementById(id).disabled = false;
+};
+</script></body></html>

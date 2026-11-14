@@ -1,0 +1,9 @@
+# The PC tests on every push: the instrument's ways, a piece, short random-play soaks, the screens.
+name: test
+on: [push, pull_request]
+jobs:
+  pc:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: SOAK_MIN=2 sh build.sh
